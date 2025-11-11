@@ -1,1 +1,16 @@
-# Placeholder - logic same as working local version
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "90minut.pl – ustawienia",
+        "description": "Konfiguracja integracji 90minut.pl",
+        "data": {
+          "team_name": "Nazwa klubu",
+          "team_id": "ID klubu z 90minut.pl",
+          "last_matches": "Ilość zakończonych meczów",
+          "next_matches": "Ilość nadchodzących meczów"
+        }
+      }
+    }
+  }
+}
