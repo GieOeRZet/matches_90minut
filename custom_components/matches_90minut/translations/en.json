@@ -1,0 +1,31 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "90minut.pl Matches",
+        "description": "Displays match results and schedule from 90minut.pl",
+        "data": {
+          "team_name": "Team name (e.g. Górnik Zabrze)",
+          "team_id": "Team ID from 90minut.pl (e.g. 101)",
+          "season_id": "Season ID (e.g. 107) or 'auto'",
+          "last_matches": "Number of past matches to show",
+          "next_matches": "Number of upcoming matches to show"
+        }
+      }
+    },
+    "options": {
+      "step": {
+        "init": {
+          "title": "Reconfigure integration",
+          "data": {
+            "team_name": "Team name",
+            "team_id": "Team ID",
+            "season_id": "Season ID or 'auto'",
+            "last_matches": "Past matches count",
+            "next_matches": "Upcoming matches count"
+          }
+        }
+      }
+    }
+  }
+}
