@@ -1,35 +1,35 @@
 """Sensor for 90minut.pl match data."""
-
-from datetime import datetime, timedelta
+import os
 import logging
+from datetime import datetime, timedelta
 import aiohttp
-import asyncio
 from bs4 import BeautifulSoup
 from homeassistant.helpers.entity import Entity
 
 _LOGGER = logging.getLogger(__name__)
 
-# domyślny interwał 6 godzin, live 10 minut
 DEFAULT_UPDATE_INTERVAL = timedelta(hours=6)
 LIVE_UPDATE_INTERVAL = timedelta(minutes=10)
 
 
 async def async_setup_entry(hass, entry, async_add_entities):
     """Set up the sensor from a config entry."""
-    team_name = entry.data.get("team_name")
-    team_id = entry.data.get("team_id")
-    season_id = entry.data.get("season_id", "")
-    last_matches = entry.data.get("last_matches", 5)
-    next_matches = entry.data.get("next_matches", 1)
-
-    sensor = NinetyMinutSensor(team_name, team_id, season_id, last_matches, next_matches)
+    sensor = NinetyMinutSensor(
+        hass=hass,
+        team_name=entry.data.get("team_name"),
+        team_id=entry.data.get("team_id"),
+        season_id=entry.data.get("season_id", ""),
+        last_matches=entry.data.get("last_matches", 5),
+        next_matches=entry.data.get("next_matches", 1),
+    )
     async_add_entities([sensor], True)
 
 
 class NinetyMinutSensor(Entity):
     """Representation of the 90minut.pl match sensor."""
 
-    def __init__(self, team_name, team_id, season_id, last_matches, next_matches):
+    def __init__(self, hass, team_name, team_id, season_id, last_matches, next_matches):
+        self.hass = hass
         self._team_name = team_name
         self._team_id = team_id
         self._season_id = season_id
@@ -40,6 +40,8 @@ class NinetyMinutSensor(Entity):
         self._attrs = {}
         self._dynamic_interval = DEFAULT_UPDATE_INTERVAL
         self._last_update_time = None
+
+        self._herby_path = hass.config.path("www/herby")
 
     @property
     def name(self):
@@ -60,13 +62,10 @@ class NinetyMinutSensor(Entity):
     async def async_update(self):
         """Fetch and parse data from 90minut.pl."""
         now = datetime.now()
-
-        # zabezpieczenie przed zbyt częstym odświeżaniem
         if self._last_update_time and now - self._last_update_time < self._dynamic_interval:
             return
 
         try:
-            # budowa adresu URL
             url = f"http://www.90minut.pl/skarb.php?id_klub={self._team_id}"
             if self._season_id:
                 url += f"&id_sezon={self._season_id}"
@@ -89,20 +88,17 @@ class NinetyMinutSensor(Entity):
                     "friendly_name": f"90minut {self._team_name} matches",
                 }
 
-            # ustaw dynamiczny interwał
             self._update_interval_based_on_live_match(matches)
-
             self._last_update_time = now
 
         except Exception as e:
-            _LOGGER.error("❌ Błąd aktualizacji danych 90minut.pl: %s", e)
+            _LOGGER.error("Błąd aktualizacji danych 90minut.pl: %s", e)
 
     def _parse_matches(self, soup):
         """Parse match rows from the 90minut.pl HTML."""
         matches = []
-        table_rows = soup.find_all("tr", class_="mecz")
-
-        for row in table_rows:
+        rows = soup.find_all("tr", class_="mecz")
+        for row in rows:
             try:
                 date_text = row.find("td", class_="data").get_text(strip=True)
                 home = row.find("td", class_="gospodarz").get_text(strip=True)
@@ -118,7 +114,10 @@ class NinetyMinutSensor(Entity):
                         g, h = map(int, score.split("-"))
                         result = "win" if g > h else "loss" if g < h else "draw"
                     except Exception:
-                        result = None
+                        pass
+
+                logo_home = self._get_logo(home)
+                logo_away = self._get_logo(away)
 
                 matches.append({
                     "date": date.strftime("%Y-%m-%d %H:%M"),
@@ -129,38 +128,55 @@ class NinetyMinutSensor(Entity):
                     "finished": finished,
                     "result": result,
                     "league": competition.split(",")[0][:2].strip(),
-                    "logo_home": f"/local/herby/{self._slugify(home)}.png",
-                    "logo_away": f"/local/herby/{self._slugify(away)}.png",
+                    "logo_home": logo_home,
+                    "logo_away": logo_away,
                 })
-
             except Exception:
                 continue
 
-        # ogranicz liczbę meczów
         return matches[-(self._last_matches + self._next_matches):]
 
-    def _parse_datetime(self, date_text):
-        """Parse date and time from Polish format."""
+    def _parse_datetime(self, text):
         try:
-            return datetime.strptime(date_text, "%d.%m.%Y, %H:%M")
+            return datetime.strptime(text, "%d.%m.%Y, %H:%M")
         except Exception:
             return datetime.now()
 
     def _slugify(self, text):
-        """Simplify text to create a file-friendly slug."""
         return (
             text.lower()
             .replace(" ", "_")
-            .replace("ł", "l")
-            .replace("ó", "o")
-            .replace("ś", "s")
-            .replace("ć", "c")
-            .replace("ż", "z")
-            .replace("ź", "z")
-            .replace("ń", "n")
-            .replace("ą", "a")
-            .replace("ę", "e")
+            .replace("ł", "l").replace("ó", "o").replace("ś", "s")
+            .replace("ć", "c").replace("ż", "z").replace("ź", "z")
+            .replace("ń", "n").replace("ą", "a").replace("ę", "e")
         )
+
+    def _get_logo(self, team_name):
+        """Check or download team crest."""
+        slug = self._slugify(team_name)
+        local_file = os.path.join(self._herby_path, f"{slug}.png")
+
+        if os.path.exists(local_file):
+            return f"/local/herby/{slug}.png"
+
+        os.makedirs(self._herby_path, exist_ok=True)
+        logo_url = f"http://www.90minut.pl/logo/{slug}.png"
+
+        try:
+            import aiohttp
+            async def download_logo():
+                async with aiohttp.ClientSession() as session:
+                    async with session.get(logo_url) as resp:
+                        if resp.status == 200:
+                            with open(local_file, "wb") as f:
+                                f.write(await resp.read())
+
+            import asyncio
+            asyncio.create_task(download_logo())
+        except Exception:
+            pass
+
+        return f"/local/herby/{slug}.png"
 
     def _update_interval_based_on_live_match(self, matches):
         """Adjust update interval depending on whether a match is live."""
@@ -172,10 +188,7 @@ class NinetyMinutSensor(Entity):
         for match in matches:
             match_time = datetime.strptime(match["date"], "%Y-%m-%d %H:%M")
             if match_time <= now <= match_time + timedelta(hours=2):
-                # trwa mecz
                 self._dynamic_interval = LIVE_UPDATE_INTERVAL
-                _LOGGER.debug("⚽ Wykryto aktywny mecz – odświeżanie co 10 minut.")
                 return
 
-        # domyślnie co 6h
         self._dynamic_interval = DEFAULT_UPDATE_INTERVAL
