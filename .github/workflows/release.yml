@@ -1,0 +1,58 @@
+name: 🚀 Build & Release Matches Integration (90minut)
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Podaj numer wersji (np. 0.1.003-alpha)'
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 🧩 Checkout repo
+        uses: actions/checkout@v4
+
+      - name: 🧰 Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.x
+
+      - name: 🔍 Wczytaj wersję z inputu
+        id: version
+        run: |
+          VERSION="${{ github.event.inputs.version }}"
+          echo "VERSION=${VERSION}" >> $GITHUB_ENV
+          echo "🔖 Version: ${VERSION}"
+
+      - name: 📝 Zaktualizuj manifest.json i README.md
+        run: |
+          echo "Aktualizuję wersję w manifest.json i README.md..."
+          sed -i "s/\"version\": \".*\"/\"version\": \"${VERSION}\"/g" custom_components/matches_90minut/manifest.json
+          sed -i "s/Version:.*/Version: ${VERSION}/g" README.md || true
+
+      - name: 🗜️ Zbuduj paczkę ZIP (bez dodatkowego folderu)
+        run: |
+          mkdir dist
+          zip -r "dist/matches_90minut-${VERSION}.zip" custom_components README.md hacs.json -x "*.git*" -x "*/__pycache__/*"
+
+      - name: 🏷️ Utwórz tag i release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ env.VERSION }}
+          name: Matches Integration (90minut) ${{ env.VERSION }}
+          body: |
+            Automatyczny release wersji **${{ env.VERSION }}**
+
+            🧩 Integracja: Matches Integration (90minut)
+            📦 Zawartość: custom_components/, README.md, hacs.json
+          draft: false
+          prerelease: false
+          files: dist/*.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
