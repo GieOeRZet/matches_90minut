@@ -1,0 +1,31 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "90minut.pl – ustawienia",
+        "description": "Wyświetla wyniki i terminarz meczów z serwisu 90minut.pl",
+        "data": {
+          "team_name": "Nazwa klubu (np. Górnik Zabrze)",
+          "team_id": "ID klubu na 90minut.pl (np. 101)",
+          "season_id": "ID sezonu (np. 107) lub 'auto'",
+          "last_matches": "Liczba zakończonych meczów do pokazania",
+          "next_matches": "Liczba nadchodzących meczów do pokazania"
+        }
+      }
+    },
+    "options": {
+      "step": {
+        "init": {
+          "title": "Rekonfiguracja integracji",
+          "data": {
+            "team_name": "Nazwa klubu",
+            "team_id": "ID klubu",
+            "season_id": "ID sezonu lub 'auto'",
+            "last_matches": "Ilość zakończonych meczów",
+            "next_matches": "Ilość nadchodzących meczów"
+          }
+        }
+      }
+    }
+  }
+}
