@@ -1,0 +1,8 @@
+{
+  "name": "90minut.pl – Wyniki meczów",
+  "content_in_root": false,
+  "render_readme": true,
+  "domains": [
+    "matches_90minut"
+  ]
+}
