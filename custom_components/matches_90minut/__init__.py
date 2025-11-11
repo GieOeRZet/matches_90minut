@@ -1,11 +1,12 @@
 """90minut.pl – Matches Integration."""
 
-import importlib
-import logging
-import asyncio
 from homeassistant.exceptions import ConfigEntryNotReady
+import importlib
+import asyncio
+import logging
 
 _LOGGER = logging.getLogger(__name__)
+
 DOMAIN = "matches_90minut"
 PLATFORMS = ["sensor"]
 
@@ -13,32 +14,27 @@ REQUIRED_PACKAGES = ["PIL", "requests", "bs4"]
 
 
 async def async_setup_entry(hass, entry):
-    """Set up integration from a config entry with dependency check and retry."""
+    """Set up integration from a config entry with dependency check."""
     _LOGGER.info("🔄 Inicjalizacja integracji %s...", DOMAIN)
 
+    # sprawdź, czy wymagane biblioteki są dostępne
     for pkg in REQUIRED_PACKAGES:
-        success = False
-        for attempt in range(12):  # 12 × 10 s = 2 min
+        for attempt in range(6):
             try:
                 importlib.import_module(pkg)
-                success = True
                 break
             except ImportError:
-                _LOGGER.warning("📦 Pakiet %s nie gotowy (próba %s/12)...", pkg, attempt + 1)
+                _LOGGER.warning("📦 Pakiet %s niegotowy (próba %s/6)...", pkg, attempt + 1)
                 await asyncio.sleep(10)
-        if not success:
-            _LOGGER.error("❌ Pakiet %s nie został zainstalowany – integracja wstrzymana.", pkg)
+        else:
             raise ConfigEntryNotReady(f"Package {pkg} not ready")
 
-    hass.async_create_task(
-        hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
-    )
-    _LOGGER.info("✅ Integracja %s zainicjowana pomyślnie.", DOMAIN)
+    # poprawka: bez create_task — wymagane przez HA 2025.1+
+    await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
+    _LOGGER.info("✅ Integracja %s uruchomiona pomyślnie.", DOMAIN)
     return True
 
 
 async def async_unload_entry(hass, entry):
-    """Unload integration when removed from Home Assistant."""
-    _LOGGER.info("🧹 Wyłączanie integracji %s...", DOMAIN)
-    unload_ok = await hass.config_entries.async_unload_platforms(entry, PLATFORMS)
-    return unload_ok
+    """Unload integration when removed."""
+    return await hass.config_entries.async_unload_platforms(entry, PLATFORMS)
