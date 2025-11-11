@@ -2,15 +2,19 @@
   "config": {
     "step": {
       "user": {
-        "title": "90minut.pl – ustawienia",
-        "description": "Konfiguracja integracji 90minut.pl",
+        "title": "90minut.pl – konfiguracja",
+        "description": "Ustaw parametry integracji 90minut.pl",
         "data": {
-          "team_name": "Nazwa klubu",
-          "team_id": "ID klubu z 90minut.pl",
-          "last_matches": "Ilość zakończonych meczów",
+          "team_name": "Nazwa drużyny",
+          "team_id": "ID drużyny (np. 101 = Górnik Zabrze)",
+          "season_id": "ID sezonu (pozostaw puste = automatyczny bieżący)",
+          "last_matches": "Ilość poprzednich meczów",
           "next_matches": "Ilość nadchodzących meczów"
         }
       }
-    }
-  }
-}
+    },
+    "error": {
+      "cannot_connect": "Nie można połączyć się z 90minut.pl"
+    },
+    "abort": {
+      "already_configured
