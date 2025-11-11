@@ -1,0 +1,17 @@
+{
+  "domain": "matches_90minut",
+  "name": "90minut.pl – Wyniki meczów",
+  "version": "0.1.001-alpha",
+  "documentation": "https://www.90minut.pl/",
+  "issue_tracker": "https://github.com/GieOeRZet/matches_90minut/issues",
+  "requirements": [
+    "beautifulsoup4==4.12.3",
+    "requests==2.32.3",
+    "pillow==10.4.0"
+  ],
+  "codeowners": [
+    "@GieOeRZet"
+  ],
+  "config_flow": true,
+  "iot_class": "cloud_polling"
+}
