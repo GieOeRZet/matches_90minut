@@ -1,4 +1,4 @@
-name: 🧩 Validate JSON Files
+name: 🧩 Validate JSON & Version Consistency
 
 on:
   push:
@@ -10,7 +10,7 @@ on:
 jobs:
   validate:
     runs-on: ubuntu-latest
-    name: Validate hacs.json and manifest.json
+    name: Validate JSON files and manifest version
 
     steps:
       - name: 🧩 Checkout repository
@@ -21,6 +21,7 @@ jobs:
         with:
           python-version: 3.x
 
+      # 🔹 Walidacja plików JSON
       - name: 🔍 Validate JSON files
         run: |
           echo "Sprawdzam poprawność plików JSON..."
@@ -31,8 +32,13 @@ jobs:
           done
           echo "✅ Wszystkie pliki JSON są poprawne!"
 
-      - name: ⚠️ Jeśli któryś JSON jest błędny
-        if: failure()
+      # 🔹 Sprawdzenie zgodności wersji manifestu z ostatnim tagiem
+      - name: 🏷️ Check manifest version against latest Git tag
         run: |
-          echo "❌ Błąd składni w jednym z plików JSON!"
-          exit 1
+          echo "Sprawdzam zgodność wersji w manifest.json z tagiem GitHub..."
+          # pobierz wersję z manifest.json
+          MANIFEST_VERSION=$(python3 -c "import json; print(json.load(open('custom_components/matches_90minut/manifest.json'))['version'])")
+          echo "📦 Wersja w manifest.json: ${MANIFEST_VERSION}"
+
+          # pobierz najnowszy tag z repozytorium
+          git fetch --tags
