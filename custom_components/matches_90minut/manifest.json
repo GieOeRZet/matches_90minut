@@ -1,13 +1,11 @@
 {
   "domain": "matches_90minut",
   "name": "Matches Integration (90minut)",
-  "version": "0.1.004",
-  "documentation": "https://www.90minut.pl/",
+  "version": "0.1.015",
+  "documentation": "https://github.com/GieOeRZet/matches_90minut",
   "issue_tracker": "https://github.com/GieOeRZet/matches_90minut/issues",
   "requirements": [],
-  "codeowners": [
-    "@GieOeRZet"
-  ],
+  "codeowners": ["@GieOeRZet"],
   "config_flow": true,
   "iot_class": "cloud_polling"
 }
