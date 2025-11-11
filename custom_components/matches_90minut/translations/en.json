@@ -2,19 +2,57 @@
   "config": {
     "step": {
       "user": {
-        "title": "90minut.pl Configuration",
-        "description": "Enter team data",
+        "title": "90minut.pl Integration Setup",
+        "description": "Enter the team information to fetch match data from 90minut.pl.",
         "data": {
           "team_name": "Team name",
-          "team_id": "Team ID (from 90minut.pl)",
-          "season_id": "Season ID (optional)",
+          "team_id": "Team ID (from 90minut.pl URL)",
+          "season_id": "Season ID (empty = current)",
           "last_matches": "Number of past matches",
           "next_matches": "Number of upcoming matches"
         }
       }
     },
     "error": {
-      "cannot_connect": "Cannot connect to 90minut.pl"
+      "cannot_connect": "Cannot connect to 90minut.pl. Check your network or team ID.",
+      "invalid_team": "Invalid team ID. Please verify the 90minut.pl team URL.",
+      "unknown": "Unexpected error occurred."
+    },
+    "abort": {
+      "already_configured": "This team is already configured.",
+      "no_data": "Could not retrieve match data from 90minut.pl."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Reconfigure 90minut.pl Integration",
+        "description": "Update team information or number of matches to display. Changes will apply after saving.",
+        "data": {
+          "team_name": "Team name",
+          "team_id": "Team ID",
+          "season_id": "Season ID (empty = current)",
+          "last_matches": "Number of past matches",
+          "next_matches": "Number of upcoming matches",
+          "debug_mode": "Debug mode (detailed logs)"
+        }
+      }
+    }
+  },
+  "entity": {
+    "sensor": {
+      "matches": {
+        "name": "90minut.pl Matches",
+        "state": "Last match",
+        "attributes": {
+          "matches": "Matches list",
+          "finished_count": "Finished matches",
+          "upcoming_count": "Upcoming matches",
+          "result": "Result",
+          "competition": "Competition",
+          "date": "Match date"
+        }
+      }
     }
   }
 }
