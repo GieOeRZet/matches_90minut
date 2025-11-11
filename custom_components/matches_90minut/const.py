@@ -1,8 +1,10 @@
-"""Stałe dla integracji Matches 90minut."""
+"""Stałe dla integracji matches_90minut."""
 
 DOMAIN = "matches_90minut"
 
-DEFAULT_LAST_MATCHES = 5
-DEFAULT_NEXT_MATCHES = 1
-DEFAULT_TEAM_ID = "101"
-DEFAULT_SEASON_ID = ""
+CONF_TEAM_NAME = "team_name"
+CONF_TEAM_ID = "team_id"
+CONF_SEASON_ID = "season_id"
+CONF_LAST_MATCHES = "last_matches"
+CONF_NEXT_MATCHES = "next_matches"
+CONF_DEBUG_MODE = "debug_mode"
