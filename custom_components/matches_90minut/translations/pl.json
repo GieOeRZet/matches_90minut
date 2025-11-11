@@ -2,19 +2,57 @@
   "config": {
     "step": {
       "user": {
-        "title": "Konfiguracja 90minut.pl",
-        "description": "Wprowadź dane drużyny",
+        "title": "Konfiguracja integracji 90minut.pl",
+        "description": "Wprowadź podstawowe dane drużyny, aby pobierać aktualne i nadchodzące mecze.",
         "data": {
           "team_name": "Nazwa drużyny",
-          "team_id": "ID drużyny (z 90minut.pl)",
-          "season_id": "ID sezonu (opcjonalnie)",
+          "team_id": "ID drużyny (z adresu 90minut.pl)",
+          "season_id": "ID sezonu (puste = bieżący)",
           "last_matches": "Liczba ostatnich meczów",
           "next_matches": "Liczba nadchodzących meczów"
         }
       }
     },
     "error": {
-      "cannot_connect": "Nie można połączyć ze stroną 90minut.pl"
+      "cannot_connect": "Nie udało się połączyć z 90minut.pl. Sprawdź połączenie lub identyfikator drużyny.",
+      "invalid_team": "Nieprawidłowe ID drużyny. Sprawdź adres URL drużyny na stronie 90minut.pl.",
+      "unknown": "Wystąpił nieoczekiwany błąd."
+    },
+    "abort": {
+      "already_configured": "Ta drużyna jest już skonfigurowana.",
+      "no_data": "Nie udało się pobrać danych meczowych z 90minut.pl."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Rekonfiguracja integracji 90minut.pl",
+        "description": "Zaktualizuj dane drużyny lub liczbę meczów do wyświetlenia. Zmiany zostaną zastosowane po zapisaniu.",
+        "data": {
+          "team_name": "Nazwa drużyny",
+          "team_id": "ID drużyny",
+          "season_id": "ID sezonu (puste = bieżący)",
+          "last_matches": "Liczba ostatnich meczów",
+          "next_matches": "Liczba nadchodzących meczów",
+          "debug_mode": "Tryb debugowania (szczegółowe logi)"
+        }
+      }
+    }
+  },
+  "entity": {
+    "sensor": {
+      "matches": {
+        "name": "Mecze 90minut.pl",
+        "state": "Ostatni mecz",
+        "attributes": {
+          "matches": "Lista meczów",
+          "finished_count": "Zakończone mecze",
+          "upcoming_count": "Nadchodzące mecze",
+          "result": "Wynik",
+          "competition": "Rozgrywki",
+          "date": "Data meczu"
+        }
+      }
     }
   }
 }
