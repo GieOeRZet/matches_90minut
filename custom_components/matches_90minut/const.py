@@ -1,4 +1,4 @@
-"""Stałe dla integracji matches_90minut."""
+"""Constants for matches_90minut integration."""
 
 DOMAIN = "matches_90minut"
 
