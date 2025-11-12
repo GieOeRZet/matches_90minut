@@ -2,55 +2,31 @@
   "config": {
     "step": {
       "user": {
-        "title": "90minut.pl Integration Setup",
-        "description": "Enter the team information to fetch match data from 90minut.pl.",
+        "title": "90minut.pl integration setup",
+        "description": "Enter your team info and number of matches to display.",
         "data": {
           "team_name": "Team name",
-          "team_id": "Team ID (from 90minut.pl URL)",
-          "season_id": "Season ID (empty = current)",
+          "team_id": "Team ID (e.g. 101)",
+          "season_id": "Season ID (leave empty for current)",
           "last_matches": "Number of past matches",
-          "next_matches": "Number of upcoming matches"
+          "next_matches": "Number of upcoming matches",
+          "debug_mode": "Debug mode (verbose logging)"
         }
       }
-    },
-    "error": {
-      "cannot_connect": "Cannot connect to 90minut.pl. Check your network or team ID.",
-      "invalid_team": "Invalid team ID. Please verify the 90minut.pl team URL.",
-      "unknown": "Unexpected error occurred."
-    },
-    "abort": {
-      "already_configured": "This team is already configured.",
-      "no_data": "Could not retrieve match data from 90minut.pl."
     }
   },
   "options": {
     "step": {
       "init": {
-        "title": "Reconfigure 90minut.pl Integration",
-        "description": "Update team information or number of matches to display. Changes will apply after saving.",
+        "title": "90minut.pl integration options",
+        "description": "Change integration settings.",
         "data": {
           "team_name": "Team name",
           "team_id": "Team ID",
-          "season_id": "Season ID (empty = current)",
-          "last_matches": "Number of past matches",
-          "next_matches": "Number of upcoming matches",
-          "debug_mode": "Debug mode (detailed logs)"
-        }
-      }
-    }
-  },
-  "entity": {
-    "sensor": {
-      "matches": {
-        "name": "90minut.pl Matches",
-        "state": "Last match",
-        "attributes": {
-          "matches": "Matches list",
-          "finished_count": "Finished matches",
-          "upcoming_count": "Upcoming matches",
-          "result": "Result",
-          "competition": "Competition",
-          "date": "Match date"
+          "season_id": "Season ID",
+          "last_matches": "Past matches",
+          "next_matches": "Upcoming matches",
+          "debug_mode": "Debug mode"
         }
       }
     }
